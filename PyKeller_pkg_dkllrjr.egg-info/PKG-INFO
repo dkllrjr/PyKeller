@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: PyKeller-pkg-dkllrjr
+Version: 0.0.1
+Summary: This package contains the classes and functions used for my research and engineering.
+Home-page: https://github.com/dkllrjr/PyKeller
+Author: Doug Keller
+Author-email: dg.kllr.jr@gmail.com
+License: UNKNOWN
+Description: # PyKeller
+        
+        My python library that I use for research and engineering.
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
