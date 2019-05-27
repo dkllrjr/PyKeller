@@ -1,5 +1,4 @@
-#Created: Thu May 23 01:20:51 2019
-#By: mach
+#Meteorological Analysis functions
 
 from datetime import datetime
 

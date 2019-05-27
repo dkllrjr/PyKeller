@@ -2,16 +2,13 @@
 
 import numpy as np
 import math as m
-from signal_analysis import mode
-import sys
-sys.path.append('/home/mach/Documents/AnE/Programming/Python/Signal_Processing')
-import wavelets as wv
-import pycuda_wavelets as py_wv
+import os
+os.chdir('..')
+os.chdir('..')
+import PyKeller.signal_processing.pycuda_wavelets as py_wv
+import PyKeller.signal_processing.wavelets as wv
+import PyKeller.signal_processing.signal_analysis as sa
 from scipy import signal
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-import signal_analysis as sa
-import time
 
 def idealbackscatterprof(bm,bu,zm,ezt,res,end): #supplies an ideal backscatter profile based on Steyn 1999
     z = np.arange(0,end+res,res) #height array at the desired resolution
@@ -33,12 +30,12 @@ def pbllayerh(wt,a,b):
     pklen = np.array(pklen)
     err = 0
     try:
-        md = mode(pklen[np.where(pklen!=0)[0]])
+        md = sa.mode(pklen[np.where(pklen!=0)[0]])
     except:
         while err == 0:
             try:
                 pklen = pklen[0:-1]
-                md = mode(pklen[np.where(pklen!=0)[0]])
+                md = sa.mode(pklen[np.where(pklen!=0)[0]])
                 err = 1
             except:
                 err = 0
@@ -59,12 +56,12 @@ def pbllayerh2(wt,a,b):
     pklen = np.array(pklen)
     err = 0
     try:
-        md = mode(pklen[np.where(pklen!=0)[0]])
+        md = sa.mode(pklen[np.where(pklen!=0)[0]])
     except:
         while err == 0:
             try:
                 pklen = pklen[0:-1]
-                md = mode(pklen[np.where(pklen!=0)[0]])
+                md = sa.mode(pklen[np.where(pklen!=0)[0]])
                 err = 1
             except:
                 err = 0

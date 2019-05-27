@@ -1,7 +1,10 @@
-#Radiosondes
+#Radiosondes classes and functions
+
 import numpy as np
-#import matplotlib.pyplot as plt
 import os
+os.chdir('..')
+os.chdir('..')
+import PyKeller.atmos_sci.atmos_refractivity as ar
 
 class Radiosonde: #class to store the radiosonde data
     
@@ -11,19 +14,20 @@ class Radiosonde: #class to store the radiosonde data
         self.month = month
         self.day = day
         self.time = time
-        self.PRES = PRES #Atomspheric Pressure: hPa
-        self.HGHT = HGHT #Geopotential Height: m
-        self.TEMP = TEMP #Temperature: C
-        self.DWPT = DWPT #Dewpoint Temperature: C
-        self.RELH = RELH #Relative Humidity: %
-        self.MIXR = MIXR #Mixing Ratio: g/kg
-        self.DRCT = DRCT #Wind Direction: degrees true
-        self.SKNT = SKNT #Wind Speed: knot
-        self.THTA = THTA #Potential Temperature: K
-        self.THTE = THTE #Equivalent Potential Temperature: K
-        self.THTV = THTV #Virtual Potential Temperature: K
+        self.PRES = PRES #Atomspheric Pressure; hPa
+        self.HGHT = HGHT #Geopotential Height; m
+        self.TEMP = TEMP #Temperature; C
+        self.DWPT = DWPT #Dewpoint Temperature; C
+        self.RELH = RELH #Relative Humidity; %
+        self.MIXR = MIXR #Mixing Ratio; g/kg
+        self.DRCT = DRCT #Wind Direction; degrees true
+        self.SKNT = SKNT #Wind Speed; knot
+        self.THTA = THTA #Potential Temperature; K
+        self.THTE = THTE #Equivalent Potential Temperature; K
+        self.THTV = THTV #Virtual Potential Temperature; K
         self.layers = [] #creating empty list for adding the layers object
         self.inversions = [] #creating empty list for adding the inversions object
+        self.refractivity = [] #creating empty list for adding the refractivity object
     
     def add_layers(self,layers):
         self.layers = layers
@@ -33,6 +37,9 @@ class Radiosonde: #class to store the radiosonde data
         
     def add_index(self):
         self.index = self.year*10**6 + self.month*10**4 + self.day*10**2 + self.time #index is YYYYMMDDTT format
+    
+    def add_refractivity(self,refractivity):
+        self.refractivity = refractivity
         
 class Layer: #class to store a compressed layer from radiosonde
     
@@ -56,6 +63,13 @@ class Inversion: #class to store temperature inversion information
         self.dwptemp_bottom = dwptemp_bottom #dew point temperature at the inversion bottom
         self.dwptemp_top = dwptemp_top #dew point temperature at the inversion top
         self.layer = layer #elevated or surface based inversion
+        
+class Refractivity: #class to store the refractivity calculated from the radiosonde variables
+    
+    def __init__(self,N,M,z):
+        self.N = N #refractivity, N, equals (n - 1)*10**-6, where n is the refractive index; N units (dimensionless)
+        self.M = M #modified refractivity, M, assumes earth is flat; N units (dimensionless)
+        self.z = z #height in relation to the refractivity, as the function is only good to 200 mb; m
         
 def readtxt(fname):
 
@@ -85,7 +99,7 @@ def readtxt(fname):
                 data_list[j] = np.append(data_list[j],float(line_list[j]))
         return data_list
 
-    station = fname[len(fname)-8:len(fname)-4].upper() #retrieving the station name
+    station = fname[len(fname)-8:len(fname)-4].upper() #retrieving the station name; note the station name must be at the end of the text file name
     file = open(fname,'r')
     lines = file.readlines()
     file.close()
@@ -173,6 +187,17 @@ def get_inversions(layers):
             inversion = Inversion(inv_bottom,inv_top,temp_bottom,temp_top,dwptemp_bottom,dwptemp_top,layer)
             inversions.append(inversion)
     return inversions
+
+def get_refractivity(P,z,T,w):
+    N = np.zeros_like(P)
+    M = np.zeros_like(P)
+    T += 273.15
+    w /= 1000
+    for i in range(P.size):
+        N[i] = ar.N_eq(P[i],T[i],w[i]*P[i]/(0.622 + w[i]))
+        M[i] = ar.M_eq(N[i],z[i])
+    refractivity = Refractivity(N,M,z)
+    return refractivity
     
 def get_radiosonde_from_text():
     file_list = []
@@ -184,9 +209,11 @@ def get_radiosonde_from_text():
         radiosonde_list = readtxt(file)
         for i in radiosonde_list:
             z_flag = np.where(i.HGHT<=8000)[0]
+            P_flag = np.where(i.PRES>=200)[0]
             i.add_layers(layer_fitting(i.HGHT[z_flag],i.TEMP[z_flag],i.DWPT[z_flag],0.1))
             i.add_inversions(get_inversions(i.layers))
             i.add_index()
+            i.add_refractivity(get_refractivity(i.PRES[P_flag],i.HGHT[P_flag],i.TEMP[P_flag],i.MIXR[P_flag]))
             radiosondes.append(i)
     radiosondes = sorted(radiosondes, key = lambda ri: ri.index)
     return radiosondes

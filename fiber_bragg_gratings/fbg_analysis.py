@@ -1,13 +1,14 @@
-# By: mach
-# Created: Sun Mar 31 21:59:57 2019
+#Fiber Bragg Grating signal analysis functions
 
 import numpy as np
-import sys
-sys.path.append('/home/mach/Documents/Programming/Python/Atmospheric Science')
-import pycuda_wavelets as py_wv
+import os
+os.chdir('..')
+os.chdir('..')
+import PyKeller.signal_processing.pycuda_wavelets as py_wv
+import PyKeller.signal_processing.wavelets as wv
+from scipy import signal
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
-#from scipy import signal
 
 def find_a_b(wt):
     b = np.where(wt[0,:]==max(wt[0,:]))[0][0]

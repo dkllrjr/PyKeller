@@ -1,6 +1,4 @@
-#Wavelet Analysis and Transform minipackage with PyCuda
-
-#Written by Doug Keller
+#Wavelet Analysis and Transform functions written with PyCuda
 
 import pycuda.autoinit
 import pycuda.driver as drv

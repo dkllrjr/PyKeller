@@ -1,9 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Dec 23 19:58:41 2018
-
-@author: Doug
-"""
+#Signal Analysis general functions
 
 import numpy as np
 import collections
