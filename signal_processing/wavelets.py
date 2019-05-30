@@ -67,13 +67,13 @@ def clip_wavelet_kw(wt,a,b):
 
 def padding_start_sg(f,x,start,y_0,n):
     
-    def pad_sg(x,y_0,a,b,n):
-        return a*(y_0/a)**((x - b)/b)**(2*n)
+    def pad_sg(x,y_0,a,b,c,n):
+        return a*(y_0/a)**((x - b)/c)**(2*n)
     
     arr_x = np.arange(start,x[0],x[1]-x[0])
     arr = np.zeros_like(arr_x)
     for i in range(arr_x.size):
-        arr[i] = pad_sg(arr_x[i],y_0,f[0]-min(f),x[0],n) + min(f) #goes to y_0 at the minimum of the signal. May want to change for different linearily added constants.
+        arr[i] = pad_sg(arr_x[i],y_0,f[0]-min(f),x[0],x[0]-start,n) + min(f) #goes to y_0 at the minimum of the signal. May want to change for different linearily added constants.
     f = np.append(arr,f)
     x = np.append(arr_x,x)
     return f,x

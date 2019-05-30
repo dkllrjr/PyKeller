@@ -53,8 +53,7 @@ def kwwt(f,x,a,b,n): #runs the wavelet transform with the "Keller" Wavelet (TM).
     wt_real = reduce_psi(x,a,b,psi_real)
     wt_imag = reduce_psi(x,a,b,psi_imag)
     
-    wt = np.append(wt_real,wt_imag)
-    wt = np.reshape(wt,(2,a.size,b.size))
+    wt = wt_real + wt_imag * 1j
     
     return wt
 
