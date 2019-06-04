@@ -111,3 +111,9 @@ def norm_sup_gauss(arr,a,n):
     for i in range(arr.size):
         x_sg[i] = np.exp(-.5*(x[i]/a)**(2*n)) * arr[i]
     return x_sg
+
+def power_2(x):
+    i = 1
+    while len(x) // 2**i > 0:
+        i += 1
+    return i

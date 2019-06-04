@@ -11,24 +11,25 @@ class Velocity:
         self.wind = []
     
     def add_raw(self,u,v,w,T,t):
-        
-        class Raw:
-            
-            def __init__(self,u,v,w,T,t):
-                self.u = u
-                self.v = v
-                self.w = w
-                self.T = T
-                self.t = t
-                
         raw = Raw(u,v,w,T,t)
         self.raw = raw
         
-    def add_turbulence(self,turbulence):
+    def add_turbulence(self,u,v,w,T,t,period):
+        turbulence = Turbulence(u,v,w,T,t,period)
         self.turbulence.append(turbulence)
     
-    def add_wind(self,wind):
+    def add_wind(self,speed,theta,phi,period):
+        wind = Wind(speed,theta,phi,period)
         self.wind.append(wind)
+        
+class Raw:
+            
+    def __init__(self,u,v,w,T,t):
+        self.u = u
+        self.v = v
+        self.w = w
+        self.T = T
+        self.t = t
         
 class Turbulence:
     
@@ -38,13 +39,13 @@ class Turbulence:
         self.v_mean, self.v_prime = run_reynolds_decomposition(v)
         self.w_mean, self.w_prime = run_reynolds_decomposition(w)
         self.T_mean, self.T_prime = run_reynolds_decomposition(T)
-        self.t_mean, self.t_prime = run_reynolds_decomposition(t)
+        self.t_mean, _ = run_reynolds_decomposition(t)
 
 class Wind:
     
-    def __init__(self,wind,theta,phi,period):
+    def __init__(self,speed,theta,phi,period):
         self.period = period
-        self.speed = wind
+        self.speed = speed
         self.direction = theta
         self.inclination = phi
 
@@ -63,11 +64,9 @@ def get_turbulence_wind(velocity,period):
     T = temp[3]
     t = temp[4]
     u,v,w,theta,phi = run_tilt_correction(u,v,w)
-    turbulence = Turbulence(u,v,w,T,t,period)
-    wind = run_wind_speed(u,v,w)
-    wind = Wind(wind,theta,phi,period)
-    velocity.add_turbulence(turbulence)
-    velocity.add_wind(wind)
+    speed = run_wind_speed(u,v,w)
+    velocity.add_turbulence(u,v,w,T,t,period)
+    velocity.add_wind(speed,theta,phi,period)
         
 def periodize(x,t,period):
     #period is in minutes, assuming t is in seconds
@@ -75,8 +74,7 @@ def periodize(x,t,period):
     L = int(round(period*60/Ts))
     x_period = []
     for i in range(t.size//L):
-        x_period.append(x[i*L:i*L+L+1])
-    x_period = x_period
+        x_period.append(x[i*L:i*L+L])
     return x_period
 
 def reynolds_decomposition(x):
@@ -126,7 +124,7 @@ def tilt_correction(u,v,w):
 
 def run_tilt_correction(u,v,w):
     #input periodized u, v, w
-    theta = np.zeros_like(u)
+    theta = np.zeros(len(u))
     phi = np.zeros_like(theta)
     for i in range(theta.size):
         u[i], v[i], w[i], theta[i], phi[i] = tilt_correction(u[i],v[i],w[i])
