@@ -75,14 +75,15 @@ def reduce_temp_ft_ft(w,n,temp_ft): #use this function to parallel reduce summat
     return ft
 
 def ft(s,t): #runs the fourier transform
+
+    w = np.linspace(1/(t[-1]-t[0]),1/(2*(t[1] - t[0])),s.size,dtype=np.float32)*2*np.pi
     
     s,n = gridize(s,1024)
     t,_ = gridize(t,1024)
     
     t = np.array(t).astype(np.float32)
     s = np.array(s).astype(np.float32)
-    w = np.linspace(0,1/(2*(t[1] - t[0])),s.size,dtype=np.float32)*2*np.pi
-
+ 
     exp_real = fill_ft_real(s,t,w,n)
     exp_imag = fill_ft_imag(s,t,w,n)
     

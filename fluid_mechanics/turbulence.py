@@ -2,6 +2,10 @@
 #By: mach
 
 import numpy as np
+import os
+os.chdir('..')
+os.chdir('..')
+import PyKeller.signal_processing.pycuda_fourier as pyft
 
 class Velocity:
     
@@ -129,3 +133,10 @@ def run_tilt_correction(u,v,w):
     for i in range(theta.size):
         u[i], v[i], w[i], theta[i], phi[i] = tilt_correction(u[i],v[i],w[i])
     return u, v, w, theta, phi
+
+def turbulent_spectral_energy(x,t):
+    x_ft,x_w = pyft.ft(x,t)
+    energy = np.zeros_like(x_ft)
+    for i in range(energy.size):
+        energy[i] = 2*(x_ft[i].real**2 + x_ft[i].imag**2)
+    return energy,x_w
