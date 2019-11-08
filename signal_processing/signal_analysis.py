@@ -241,3 +241,22 @@ def linear_regression2line(linreg,x):
     y_line = np.array([line(linreg,x_line[0]),line(linreg,x_line[1])])
     
     return x_line, y_line
+
+def windowed_mean(f,x,N):
+    
+    f = np.array(f)
+    x = np.array(x)
+    wm = np.array([])
+    wmx = np.array([])
+    i = x[0]
+    
+    while i < x[-1]:
+        ind = []
+        for j in range(len(x)):
+            if i <= x[j] < i + N:
+                ind.append(j)
+        wm = np.append(wm,np.nanmean(f[ind]))
+        wmx = np.append(wmx,i + N/2)
+        i += N
+        
+    return wmx, wm
