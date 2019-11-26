@@ -1,9 +1,9 @@
 README.md
 setup.py
-PyKeller_pkg_dkllrjr.egg-info/PKG-INFO
-PyKeller_pkg_dkllrjr.egg-info/SOURCES.txt
-PyKeller_pkg_dkllrjr.egg-info/dependency_links.txt
-PyKeller_pkg_dkllrjr.egg-info/top_level.txt
+PyKeller.egg-info/PKG-INFO
+PyKeller.egg-info/SOURCES.txt
+PyKeller.egg-info/dependency_links.txt
+PyKeller.egg-info/top_level.txt
 atmos_sci/__init__.py
 atmos_sci/atmos_refractivity.py
 atmos_sci/met_analysis.py
