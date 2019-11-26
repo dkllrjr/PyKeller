@@ -7,7 +7,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="PyKeller-pkg-dkllrjr",
+    name="PyKeller",
     version="0.0.1",
     author="Doug Keller",
     author_email="dg.kllr.jr@gmail.com",

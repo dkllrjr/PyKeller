@@ -1,5 +1,4 @@
-#Created: Sat May 18 15:11:05 2019
-#By: mach
+#Image Analysis functions
 
 import numpy as np
 
