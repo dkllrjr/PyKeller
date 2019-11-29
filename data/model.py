@@ -23,3 +23,14 @@ def lat_lon_near(lat_lon,loc):
         dist.append(dist_sphere_deg(E_r,lat_lon[i][1],lat_lon[i][0],E_r,loc[1],loc[0]))
     ind = np.where(np.array(dist)==np.min(np.array(dist)))[0]
     return np.array(lat_lon)[ind]
+
+def lat_lon2nparray(xrvar):
+    lat = np.array(xrvar.nav_lat_grid_M)
+    lon = np.array(xrvar.nav_lon_grid_M)
+    lat_lon = []
+    for i in range(lat.shape[0]):
+        for j in range(lat.shape[1]):
+            lat_lon.append([lat[i,j],lon[i,j]])
+    lat_lon_np = np.array(lat_lon)
+    lat_lon_np = lat_lon_np.reshape(lat.shape[0],lat.shape[1],2)
+    return lat_lon_np
