@@ -34,3 +34,20 @@ def lat_lon2nparray(xrvar):
     lat_lon_np = np.array(lat_lon)
     lat_lon_np = lat_lon_np.reshape(lat.shape[0],lat.shape[1],2)
     return lat_lon_np
+
+def stringify_dates(xarr):
+    dates = []
+    for i in xarr:
+        dates.append(str(np.array(i['time_counter'])))
+    return dates
+
+def both_dates(dates1,dates2):
+    return list(set(dates1).intersection(dates2))
+
+def dates2indices(xarr,dates):
+    ind = []
+    xr_dates = stringify_dates(xarr)
+    for i in range(len(xr_dates)):
+        if xr_dates[i] in dates:
+            ind.append(i)
+    return ind
