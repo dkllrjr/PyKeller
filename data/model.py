@@ -51,3 +51,6 @@ def dates2indices(xarr,dates):
         if xr_dates[i] in dates:
             ind.append(i)
     return ind
+
+def reduce_density(arr,i):
+    return arr[::i,::i]
