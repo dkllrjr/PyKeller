@@ -30,7 +30,7 @@ def moving_mean(f,N):
     return mm
 
 def moving_median(f,N):
-    
+    #Window = 2*N + 1
     mm = np.zeros(f.size)
     
     for i in range(f.size):
@@ -53,7 +53,7 @@ def moving_median(f,N):
         
     return mm
 
-def brock_improved_despike(f,N):
+def brock_improved_despike(f,N,verbose=False):
     #Improved version of Brock's "A Nonlinear Filter to Remove Impulse Noise from Meteorological Data," 1986, JTECH
     
     def run_despike(f,f_med):
@@ -70,6 +70,8 @@ def brock_improved_despike(f,N):
         spike_loc = []
         bin_count = 3
         while bin_count < bin_max:
+            if verbose:
+                print(bin_count,bin_max)
             hist,bins = np.histogram(dif,bins=bin_count)
             
             dif_threshold = [bins[0],bins[-1]]
@@ -243,20 +245,14 @@ def linear_regression2line(linreg,x):
     return x_line, y_line
 
 def windowed_mean(f,x,N):
-    
-    f = np.array(f)
-    x = np.array(x)
-    wm = np.array([])
-    wmx = np.array([])
-    i = x[0]
-    
-    while i < x[-1]:
-        ind = []
+    #N segements of the data
+    win_x = np.linspace(np.min(x),np.max(x),N)
+    new_x = midpoint(win_x)
+    new_f = []
+    for i in range(len(win_x)-1):
+        temp_f = []
         for j in range(len(x)):
-            if i <= x[j] < i + N:
-                ind.append(j)
-        wm = np.append(wm,np.nanmean(f[ind]))
-        wmx = np.append(wmx,i + N/2)
-        i += N
-        
-    return wmx, wm
+            if win_x[i] < x[j] < win_x[i+1]:
+                temp_f.append(f[j])
+        new_f.append(np.mean(np.array(temp_f)))
+    return np.array(new_f),np.array(new_x)
