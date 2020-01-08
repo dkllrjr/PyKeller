@@ -29,11 +29,13 @@ def moving_mean(f,N):
         
     return mm
 
-def moving_median(f,N):
+def moving_median(f,N,verbose=False):
     #Window = 2*N + 1
     mm = np.zeros(f.size)
     
     for i in range(f.size):
+        if verbose:
+            print(i)
         if i < N:
             m = []
             for j in range(i+N+1):
@@ -108,12 +110,18 @@ def brock_improved_despike(f,N,verbose=False):
         return f, spikes, spike_loc
     
     f = np.array(f)
-    f_med = moving_median(f,N)
+    if verbose:
+        print('Running moving mean')
+    f_med = moving_median(f,N,verbose)
     
+    if verbose:
+        print('Running despiking')
     f,spikes,spike_loc = run_despike(f,f_med)
     spike = [spikes]
     slc = spike_loc
     while spikes > 0:
+        if verbose:
+            print('Spike count: ',len(spikes))
         f,spikes,spike_loc = run_despike(f,f_med)
         spike.append(spikes)
         slc += spike_loc
