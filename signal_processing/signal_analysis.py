@@ -121,7 +121,7 @@ def brock_improved_despike(f,N,verbose=False):
     slc = spike_loc
     while spikes > 0:
         if verbose:
-            print('Spike count: ',len(spikes))
+            print('Spike count: ',spikes)
         f,spikes,spike_loc = run_despike(f,f_med)
         spike.append(spikes)
         slc += spike_loc
