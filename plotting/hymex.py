@@ -40,7 +40,7 @@ def plotting_genoa_winds_wrforch(uas,vas,Psl,time):
     ax.set_extent([-3,20,35,51],crs=ccrs.PlateCarree());
     plt.show()
     
-def plotting_mistral_wrforch(uas,vas,Psl,time):
+def plotting_mistral_wrforch(uas,vas,Psl,time,save=False):
     ##########################################################################
     # Setting up the data
     uas = uas.loc[time]
@@ -80,12 +80,13 @@ def plotting_mistral_wrforch(uas,vas,Psl,time):
     fig.colorbar.remove()
     plt.colorbar(fig,fraction=0.030,pad=0.04,label='Sea Level Pressure [hPa]')
     plt.title(time[0:10])
-    pic_path = '/homedata/dkeller/ClimServ/python/looking_for_Mistrals/wind_vector_pics/'
-    plt.savefig(pic_path+'wind_pres_'+time[0:10]+'.png')
+    if save:
+        pic_path = '/homedata/dkeller/ClimServ/python/looking_for_Mistrals/wind_vector_pics/'
+        plt.savefig(pic_path+'wind_pres_'+time[0:10]+'.png')
     plt.show()
     plt.close()
     
-def plotting_mistral_isobar(uas,vas,Psl,time,fname_path,wind_min=None,wind_max=None):
+def plotting_mistral_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max=None):
     ##########################################################################
     # Setting up the data
     uas = uas.loc[time]
@@ -142,12 +143,13 @@ def plotting_mistral_isobar(uas,vas,Psl,time,fname_path,wind_min=None,wind_max=N
     plt.clabel(cs,fontsize=6,fmt='%1.1f')
     
     plt.title(time[0:10]+' Wind/Pressure Plot')
-    plt.savefig(fname_path+'mistral_isobar_'+time[0:10]+'.png')
+    if fname_path != None:
+        plt.savefig(fname_path+'mistral_isobar_'+time[0:10]+'.png')
     
     plt.show()
     plt.close()
 
-def plotting_mediterranean_isobar(uas,vas,Psl,time,fname_path,wind_min=None,wind_max=None):
+def plotting_mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max=None,save=False):
     ##########################################################################
     # Setting up the data
     uas = uas.loc[time]
@@ -205,7 +207,9 @@ def plotting_mediterranean_isobar(uas,vas,Psl,time,fname_path,wind_min=None,wind
     plt.clabel(cs,fontsize=6,fmt='%1.1f')
     
     plt.title(time[0:10]+' Wind/Pressure Plot')
-    plt.savefig(fname_path+'mistral_isobar_'+time[0:10]+'.png')
+    
+    if save:
+        plt.savefig(fname_path+'mistral_isobar_'+time[0:10]+'.png')
     
     plt.show()
     plt.close()
