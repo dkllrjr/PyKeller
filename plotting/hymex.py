@@ -7,14 +7,14 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 
-def plotting_genoa_wrforch(Psl):
+def genoa_wrforch(Psl):
     ax = plt.axes(projection=ccrs.Orthographic(8.9558,43.555));
     Psl.plot.contourf('nav_lon_grid_M','nav_lat_grid_M',ax=ax,transform=ccrs.PlateCarree(),cmap='rainbow',levels=30,vmin=98000,vmax=105000);
     ax.coastlines();
 #    ax.set_extent([-2,20,37,50],crs=ccrs.PlateCarree());
     plt.show()
     
-def plotting_genoa_winds_wrforch(uas,vas,Psl,time):
+def genoa_winds_wrforch(uas,vas,Psl,time):
     uas = uas.loc[time]
     vas = vas.loc[time]
     Psl = Psl.loc[time]
@@ -40,7 +40,7 @@ def plotting_genoa_winds_wrforch(uas,vas,Psl,time):
     ax.set_extent([-3,20,35,51],crs=ccrs.PlateCarree());
     plt.show()
     
-def plotting_mistral_wrforch(uas,vas,Psl,time,save=False):
+def mistral_wrforch(uas,vas,Psl,time,save=False):
     ##########################################################################
     # Setting up the data
     uas = uas.loc[time]
@@ -86,7 +86,7 @@ def plotting_mistral_wrforch(uas,vas,Psl,time,save=False):
     plt.show()
     plt.close()
     
-def plotting_mistral_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max=None):
+def mistral_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max=None):
     ##########################################################################
     # Setting up the data
     uas = uas.loc[time]
@@ -149,7 +149,7 @@ def plotting_mistral_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_
     plt.show()
     plt.close()
 
-def plotting_mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max=None,save=False):
+def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max=None,save=False):
     ##########################################################################
     # Setting up the data
     uas = uas.loc[time]
@@ -213,3 +213,6 @@ def plotting_mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None
     
     plt.show()
     plt.close()
+    
+def wind_time_series_42_5(u,v):
+    pass
