@@ -214,5 +214,5 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     plt.show()
     plt.close()
     
-def wind_time_series_42_5(u,v):
+def wind_time_series(u,v):
     pass
