@@ -214,5 +214,15 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     plt.show()
     plt.close()
     
-def wind_time_series(u,v):
-    pass
+def wind_time_series(wm,t,file_path):
+    
+    plt.figure(figsize=(24,4),dpi=200)
+    plt.plot(t,wm)
+    plt.yticks(fontsize=12)
+    plt.xticks(t[::146],fontsize=12)
+    plt.xlim([t[0],t[-1]])
+    plt.xlabel('Time',fontsize=14)
+    plt.ylabel('Wind Speed (m/s)',fontsize=14)
+    plt.tight_layout()
+    plt.savefig(file_path)
+    

@@ -1,5 +1,5 @@
 import numpy as np
-#import xarray as xr
+import xarray as xr
 
 def dist_sphere(r0,the0,phi0,r1,the1,phi1):
 #    (r0**2 + r1**2 - 2*r0*r1*(np.sin(the0)*np.sin(the1)*np.cos(phi0-phi1) + np.cos(the0)*np.cos(the1)))**.5
