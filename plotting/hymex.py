@@ -6,6 +6,7 @@ import PyKeller.data.model as PKdm
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import matplotlib.ticker as mticker
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
+from matplotlib.patches import Rectangle
 
 def genoa_wrforch(Psl):
     ax = plt.axes(projection=ccrs.Orthographic(8.9558,43.555));
@@ -214,7 +215,7 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     plt.show()
     plt.close()
     
-def wind_time_series(wm,t,file_path):
+def wind_time_series(wm,t,title,file_path):
     
     plt.figure(figsize=(24,4),dpi=200)
     plt.plot(t,wm)
@@ -222,7 +223,177 @@ def wind_time_series(wm,t,file_path):
     plt.xticks(t[::146],fontsize=12)
     plt.xlim([t[0],t[-1]])
     plt.xlabel('Time',fontsize=14)
-    plt.ylabel('Wind Speed (m/s)',fontsize=14)
+    plt.ylabel(title,fontsize=14)
     plt.tight_layout()
     plt.savefig(file_path)
+
+def plot_3_in_1_mistral(x,y,xlabel,ylabel,label,xticks_step,mistral_patches,file_path,top_adj=1,r_adj=1.05,figsize=(6,6)):
     
+    def make_patch_spines_invisible(ax):
+        ax.set_frame_on(True)
+        ax.patch.set_visible(False)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+    
+    fig, host = plt.subplots(figsize=figsize)
+    fig.subplots_adjust(top = top_adj)
+    fig.dpi=200
+    
+    par1 = host.twinx()
+    par2 = host.twinx()
+    
+    par2.spines["right"].set_position(("axes", r_adj))
+    make_patch_spines_invisible(par2)
+    par2.spines["right"].set_visible(True)
+    
+    p1, = host.plot(x, y[0], color = "b", label=label[0])
+    p2, = par1.plot(x, y[1], color = "r", label=label[1])
+    p3, = par2.plot(x, y[2], color = "purple", label=label[2])
+    
+    host.set_xticks(x[::xticks_step])
+    host.set_xticks(x[::int(xticks_step/2)],minor=True)
+    host.set_xlim([x[0],x[-1]])
+    host.set_ylim([0,1.125*np.max(y[0])])
+    
+    host.set_ylabel(ylabel[0],fontsize=14)
+    par1.set_ylabel(ylabel[1],fontsize=14)
+    par2.set_ylabel(ylabel[2],fontsize=14)
+    host.set_xlabel(xlabel,fontsize=14)
+    
+    host.yaxis.label.set_color(p1.get_color())
+    par1.yaxis.label.set_color(p2.get_color())
+    par2.yaxis.label.set_color(p3.get_color())
+    
+    tkw = dict(size=4, width=1.5)
+    host.tick_params(axis='y', colors=p1.get_color(), **tkw)
+    par1.tick_params(axis='y', colors=p2.get_color(), **tkw)
+    par2.tick_params(axis='y', colors=p3.get_color(), **tkw)
+    
+    host.tick_params(axis='x', **tkw)
+    
+    lines = [p1, p2, p3]
+    
+    host.legend(lines, [l.get_label() for l in lines],ncol=3,loc='upper center')
+    
+    height = 1.25 * np.max(y[0])
+    y = height/2
+    for i in range(len(mistral_patches[0])):
+        rect = Rectangle((mistral_patches[0][i],0),mistral_patches[1][i],height,alpha=.5,facecolor='g')
+        host.add_patch(rect)
+    
+    plt.tight_layout()
+    plt.savefig(file_path)
+        
+    return
+
+def plot_2_in_1_mistral(x,y,xlabel,ylabel,label,xticks_step,mistral_patches,file_path,top_adj=1,r_adj=1.05,figsize=(6,6)):
+    
+    def make_patch_spines_invisible(ax):
+        ax.set_frame_on(True)
+        ax.patch.set_visible(False)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+    
+    fig, host = plt.subplots(figsize=figsize)
+    fig.subplots_adjust(top = top_adj)
+    fig.dpi=200
+    
+    par1 = host.twinx()
+    
+    p1, = host.plot(x, y[0], color = "b", label=label[0])
+    p2, = par1.plot(x, y[1], color = "r", label=label[1])
+    
+    host.set_xticks(x[::xticks_step])
+    host.set_xticks(x[::int(xticks_step/2)],minor=True)
+    host.set_xlim([x[0],x[-1]])
+    host.set_ylim([0,1.125*np.max(y[0])])
+    
+    host.set_ylabel(ylabel[0],fontsize=14)
+    par1.set_ylabel(ylabel[1],fontsize=14)
+    host.set_xlabel(xlabel,fontsize=14)
+    
+    host.yaxis.label.set_color(p1.get_color())
+    par1.yaxis.label.set_color(p2.get_color())
+    
+    tkw = dict(size=4, width=1.5)
+    host.tick_params(axis='y', colors=p1.get_color(), **tkw)
+    par1.tick_params(axis='y', colors=p2.get_color(), **tkw)
+    
+    host.tick_params(axis='x', **tkw)
+    
+    lines = [p1, p2]
+    
+    host.legend(lines, [l.get_label() for l in lines],ncol=3,loc='upper center')
+    
+    height = 1.25 * np.max(y[0])
+    y = height/2
+    for i in range(len(mistral_patches[0])):
+        rect = Rectangle((mistral_patches[0][i],0),mistral_patches[1][i],height,alpha=.5,facecolor='g')
+        host.add_patch(rect)
+    
+    plt.tight_layout()
+    plt.savefig(file_path)
+        
+    return
+
+def plot_3_in_1_mistral_direction(x,y,xlabel,ylabel,label,xticks_step,mistral_patches,direction_patches,file_path,top_adj=1,r_adj=1.05,figsize=(6,6)):
+    
+    def make_patch_spines_invisible(ax):
+        ax.set_frame_on(True)
+        ax.patch.set_visible(False)
+        for sp in ax.spines.values():
+            sp.set_visible(False)
+    
+    fig, host = plt.subplots(figsize=figsize)
+    fig.subplots_adjust(top = top_adj)
+    fig.dpi=200
+    
+    par1 = host.twinx()
+    par2 = host.twinx()
+    
+    par2.spines["right"].set_position(("axes", r_adj))
+    make_patch_spines_invisible(par2)
+    par2.spines["right"].set_visible(True)
+    
+    p1, = host.plot(x, y[0], color = "b", label=label[0])
+    p2, = par1.plot(x, y[1], color = "r", label=label[1],linestyle='--',linewidth=.25,marker='o',markersize=1)
+    p3, = par2.plot(x, y[2], color = "purple", label=label[2])
+    
+    host.set_xticks(x[::xticks_step])
+    host.set_xticks(x[::int(xticks_step/2)],minor=True)
+    host.set_xlim([x[0],x[-1]])
+    host.set_ylim([0,1.125*np.max(y[0])])
+    
+    host.set_ylabel(ylabel[0],fontsize=14)
+    par1.set_ylabel(ylabel[1],fontsize=14)
+    par2.set_ylabel(ylabel[2],fontsize=14)
+    host.set_xlabel(xlabel,fontsize=14)
+    
+    host.yaxis.label.set_color(p1.get_color())
+    par1.yaxis.label.set_color(p2.get_color())
+    par2.yaxis.label.set_color(p3.get_color())
+    
+    tkw = dict(size=4, width=1.5)
+    host.tick_params(axis='y', colors=p1.get_color(), **tkw)
+    par1.tick_params(axis='y', colors=p2.get_color(), **tkw)
+    par2.tick_params(axis='y', colors=p3.get_color(), **tkw)
+    
+    host.tick_params(axis='x', **tkw)
+    
+    lines = [p1, p2, p3]
+    
+    host.legend(lines, [l.get_label() for l in lines],ncol=3,loc='upper center')
+    
+    height = 1.25 * np.max(y[0])
+    y = height/2
+    for i in range(len(mistral_patches[0])):
+        rect = Rectangle((mistral_patches[0][i],0),mistral_patches[1][i],height,alpha=.5,facecolor='g')
+        host.add_patch(rect)
+        
+    rect = Rectangle(direction_patches[0],direction_patches[1][0],direction_patches[1][1],alpha=.5,facecolor='b')
+    par1.add_patch(rect)
+    
+    plt.tight_layout()
+    plt.savefig(file_path)
+        
+    return
