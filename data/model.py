@@ -1,5 +1,4 @@
 import numpy as np
-import xarray as xr
 
 def dist_sphere(r0,the0,phi0,r1,the1,phi1):
 #    (r0**2 + r1**2 - 2*r0*r1*(np.sin(the0)*np.sin(the1)*np.cos(phi0-phi1) + np.cos(the0)*np.cos(the1)))**.5
@@ -16,6 +15,16 @@ def dist_sphere_deg(r0,the0,phi0,r1,the1,phi1):
     phi1 = np.deg2rad(phi1)
     return dist_sphere(r0,the0,phi0,r1,the1,phi1)
 
+def central_angle(lon0,lon1,lat0,lat1):
+    return np.arccos(np.sin(lon0)*np.sin(lon1)+np.cos(lon0)*np.cos(lon1)*np.cos(lat1-lat0))
+
+def central_angle_deg(lon0,lon1,lat0,lat1):
+    lon0 = np.deg2rad(lon0)
+    lon1 = np.deg2rad(lon1)
+    lat0 = np.deg2rad(lat0)
+    lat1 = np.deg2rad(lat1)
+    return central_angle(lon0,lon1,lat0,lat1)
+    
 def xr_near(xa,val):
     npa = np.array(xa)
     npa_abs = np.abs(npa - val)
@@ -30,16 +39,12 @@ def lat_lon_near(lat_lon,loc):
     ind = np.where(np.array(dist)==np.min(np.array(dist)))[0]
     return np.array(lat_lon)[ind]
 
-def lat_lon2nparray(xrvar):
-    lat = np.array(xrvar.nav_lat_grid_M)
-    lon = np.array(xrvar.nav_lon_grid_M)
-    lat_lon = []
-    for i in range(lat.shape[0]):
-        for j in range(lat.shape[1]):
-            lat_lon.append([lat[i,j],lon[i,j]])
-    lat_lon_np = np.array(lat_lon)
-    lat_lon_np = lat_lon_np.reshape(lat.shape[0],lat.shape[1],2)
-    return lat_lon_np
+def lat_lon_near_angle(lat_lon,loc):
+    dist = []
+    for i in range(len(lat_lon)):
+        dist.append(central_angle_deg(lat_lon[i][1],loc[1],lat_lon[i][0],loc[0]))
+    ind = np.where(np.array(dist)==np.min(np.array(dist)))[0]
+    return np.array(lat_lon)[ind]
 
 def stringify_dates(xarr):
     dates = []
@@ -60,67 +65,3 @@ def dates2indices(xarr,dates):
 
 def reduce_density(arr,i):
     return arr[::i,::i]
-
-def find_loc_wrforch(var,loc):
-    # loc needs to be a list of lists => [[lat,lon],[lat,lon]]
-    
-    lat = np.array(var.nav_lat_grid_M)
-    lon = np.array(var.nav_lon_grid_M)
-    lat_lon = []
-    
-    for i in range(lat.shape[0]):
-        for j in range(lat.shape[1]):
-            lat_lon.append([lat[i,j],lon[i,j]])
-    
-    ind_loc = []
-    
-    for i in range(len(loc)):
-        ind_loc.append(lat_lon_near(lat_lon,loc[i]))
-    
-    lat_lon_np = np.array(lat_lon)
-    lat_lon_np = lat_lon_np.reshape(lat.shape[0],lat.shape[1],2)
-    ind_loc_np = np.array(ind_loc)
-    ind_loc_np = ind_loc_np.reshape(len(loc),2)
-    
-    ind = []
-    
-    for k in range(ind_loc_np.shape[0]):
-        for i in range(lat_lon_np.shape[0]):
-            for j in range(lat_lon_np.shape[1]):
-                if tuple(lat_lon_np[i,j]) == tuple(ind_loc_np[k]):
-                    ind.append([i,j])
-    
-    ind = np.array(ind)
-    
-    return ind
-
-def load_bulk_data(data_path,year):
-    
-    prec_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_PR.nc'
-    # snow_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_PRSN.nc'
-    swdn_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_RSDS.nc'
-    lwdn_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_RLDS.nc'
-    t_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_TAS.nc'
-    q_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_HUSS.nc'
-    u_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_UAS.nc'
-    v_path = data_path + '/MEDCORDEXB_WRFGRD_Y' + year + '_VAS.nc'
-    
-    prec = xr.open_dataset(prec_path) #how to do this for multi files again?
-    # snow = xr.open_dataset(snow_path)
-    swdn = xr.open_dataset(swdn_path)
-    lwdn = xr.open_dataset(lwdn_path)
-    t = xr.open_dataset(t_path)
-    q = xr.open_dataset(q_path)
-    u = xr.open_dataset(u_path)
-    v = xr.open_dataset(v_path)
-    
-    prec = prec.pr
-    # snow = snow.prsn
-    swdn = swdn.rsds
-    lwdn = lwdn.rlds
-    t = t.tas
-    q = q.huss
-    u = u.uas
-    v = v.vas
-    
-    return prec,swdn,lwdn,t,q,u,v
