@@ -251,7 +251,7 @@ def plot_3_in_1_mistral(x,y,xlabel,ylabel,label,xticks_step,mistral_patches,file
     p3, = par2.plot(x, y[2], color = "purple", label=label[2])
     
     host.set_xticks(x[::xticks_step])
-    host.set_xticks(x[::int(xticks_step/2)],minor=True)
+    host.set_xticks(x[::8],minor=True)
     host.set_xlim([x[0],x[-1]])
     host.set_ylim([0,1.125*np.max(y[0])])
     
@@ -360,7 +360,7 @@ def plot_3_in_1_mistral_direction(x,y,xlabel,ylabel,label,xticks_step,mistral_pa
     p3, = par2.plot(x, y[2], color = "purple", label=label[2])
     
     host.set_xticks(x[::xticks_step])
-    host.set_xticks(x[::int(xticks_step/2)],minor=True)
+    host.set_xticks(x[::8],minor=True)
     host.set_xlim([x[0],x[-1]])
     host.set_ylim([0,1.125*np.max(y[0])])
     
