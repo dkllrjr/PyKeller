@@ -210,7 +210,7 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     plt.title(time[0:10]+' Wind/Pressure Plot')
     
     if save:
-        plt.savefig(fname_path+'mistral_isobar_'+time[0:10]+'.png')
+        plt.savefig(fname_path)
     
     plt.show()
     plt.close()
