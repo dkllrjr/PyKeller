@@ -156,7 +156,6 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     vas = vas.loc[time]
     Psl = Psl.loc[time]/100
     
-    print(uas.nav_lat_grid_M)
     i = np.arange(0,192)
     j = np.arange(0,300)
     uas_np = np.array(uas[i,j])
@@ -176,9 +175,9 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     ##########################################################################
     # Setting up the plot
 
-    europe_land_10m = cfeature.NaturalEarthFeature('physical','land','10m',edgecolor='black',facecolor='none') 
+    europe_land_10m = cfeature.NaturalEarthFeature('physical','land','10m',edgecolor='black',facecolor='none',linewidth=2) 
     
-    plt.figure(figsize=(8,8))
+    plt.figure(figsize=(12,8),dpi=200)
     ax = plt.axes(projection=ccrs.Orthographic(8.9558,43.555));
     ax = plt.axes(projection=ccrs.Mercator());
     ax.add_feature(europe_land_10m)
@@ -186,15 +185,15 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     gl = ax.gridlines(crs=ccrs.PlateCarree(),draw_labels=True,linewidth=.75, color='black', alpha=0.35, linestyle='--')
     gl.xlabels_top = False
     gl.ylabels_right = False
-    gl.xlocator = mticker.FixedLocator([-90,2,6,10,14,90])
-    gl.ylocator = mticker.FixedLocator([0,38,41,44,47,60])
+    gl.xlocator = mticker.FixedLocator([-90,-2,2,6,10,14,18,22,90])
+    gl.ylocator = mticker.FixedLocator([0,37,40,43,46,60])
     gl.xformatter = LONGITUDE_FORMATTER
     gl.yformatter = LATITUDE_FORMATTER
    
-    cs = Psl.plot.contour('nav_lon_grid_M','nav_lat_grid_M',ax=ax,transform=ccrs.PlateCarree(),cmap='black',levels=20,linewidths=1); 
+    cs = Psl.plot.contour('nav_lon_grid_M','nav_lat_grid_M',ax=ax,transform=ccrs.PlateCarree(),cmap='black',levels=50,linewidths=1); 
     fig = plt.contourf(X,Y,wind_mag,transform=ccrs.PlateCarree(),cmap='rainbow',levels=30);
-    plt.quiver(X,Y,uas_np,vas_np,transform=ccrs.PlateCarree(),width=.001);
-#    ax.set_extent([0,16,36,48],crs=ccrs.PlateCarree());
+    plt.quiver(X,Y,uas_np,vas_np,transform=ccrs.PlateCarree(),width=.001,scale=750);
+    ax.set_extent([-4,24,35,48],crs=ccrs.PlateCarree());
     
     if wind_min != None:
         cbar = plt.cm.ScalarMappable(cmap='rainbow')
@@ -209,7 +208,183 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     plt.title(time[0:10]+' Wind/Pressure Plot')
     
     if save:
-        plt.savefig(fname_path+'mistral_isobar_'+time[0:10]+'.png')
+        plt.savefig(fname_path)
+    
+    plt.show()
+    plt.close()
+    
+def mediterranean_isohume(uas,vas,q,time,fname_path=None,wind_min=None,wind_max=None,save=False):
+    ##########################################################################
+    # Setting up the data
+    uas = uas.loc[time]
+    vas = vas.loc[time]
+    q = q.loc[time]
+    
+    i = np.arange(0,192)
+    j = np.arange(0,300)
+    uas_np = np.array(uas[i,j])
+    vas_np = np.array(vas[i,j])
+    X = np.array(uas.nav_lon_grid_M[i,j])
+    Y = np.array(uas.nav_lat_grid_M[i,j])
+    q = q[i,j]
+    
+    density = 1
+    uas_np = PKdm.reduce_density(uas_np,density)
+    vas_np = PKdm.reduce_density(vas_np,density)
+    X = PKdm.reduce_density(X,density)
+    Y = PKdm.reduce_density(Y,density)
+    
+    wind_mag = (uas_np**2 +  vas_np**2)**.5
+    
+    ##########################################################################
+    # Setting up the plot
+
+    europe_land_10m = cfeature.NaturalEarthFeature('physical','land','10m',edgecolor='black',facecolor='none',linewidth=2) 
+    
+    plt.figure(figsize=(12,8),dpi=200)
+    ax = plt.axes(projection=ccrs.Orthographic(8.9558,43.555));
+    ax = plt.axes(projection=ccrs.Mercator());
+    ax.add_feature(europe_land_10m)
+    
+    gl = ax.gridlines(crs=ccrs.PlateCarree(),draw_labels=True,linewidth=.75, color='black', alpha=0.35, linestyle='--')
+    gl.xlabels_top = False
+    gl.ylabels_right = False
+    gl.xlocator = mticker.FixedLocator([-90,-2,2,6,10,14,18,22,90])
+    gl.ylocator = mticker.FixedLocator([0,37,40,43,46,60])
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+   
+    cs = q.plot.contour('nav_lon_grid_M','nav_lat_grid_M',ax=ax,transform=ccrs.PlateCarree(),cmap='black',levels=30,linewidths=1); 
+    fig = plt.contourf(X,Y,wind_mag,transform=ccrs.PlateCarree(),cmap='rainbow',levels=30);
+    plt.quiver(X,Y,uas_np,vas_np,transform=ccrs.PlateCarree(),width=.001,scale=750);
+    ax.set_extent([-4,24,35,48],crs=ccrs.PlateCarree());
+    
+    if wind_min != None:
+        cbar = plt.cm.ScalarMappable(cmap='rainbow')
+        cbar.set_array(wind_mag)
+        cbar.set_clim(wind_min,wind_max)
+        plt.colorbar(cbar,fraction=0.030,pad=0.04,label='Wind Magnitude [m/s]',boundaries=np.linspace(wind_min,wind_max,30))
+    else:
+        plt.colorbar(fig,fraction=0.030,pad=0.04,label='Wind Magnitude [m/s]')
+        
+    plt.clabel(cs,fontsize=6,fmt='%1.4f')
+    
+    plt.title(time[0:10]+' Wind/Specific Humidity Plot')
+    
+    if save:
+        plt.savefig(fname_path)
+    
+    plt.show()
+    plt.close()
+    
+def mediterranean_humidity(uas,vas,q,time,fname_path=None,q_min=None,q_max=None,save=False):
+    ##########################################################################
+    # Setting up the data
+    uas = uas.loc[time]
+    vas = vas.loc[time]
+    q = q.loc[time]
+    
+    i = np.arange(0,192)
+    j = np.arange(0,300)
+    uas_np = np.array(uas[i,j])
+    vas_np = np.array(vas[i,j])
+    X = np.array(uas.nav_lon_grid_M[i,j])
+    Y = np.array(uas.nav_lat_grid_M[i,j])
+    q = q[i,j]
+    
+    ##########################################################################
+    # Setting up the plot
+
+    europe_land_10m = cfeature.NaturalEarthFeature('physical','land','10m',edgecolor='black',facecolor='none',linewidth=2) 
+    
+    plt.figure(figsize=(12,8),dpi=200)
+    ax = plt.axes(projection=ccrs.Orthographic(8.9558,43.555));
+    ax = plt.axes(projection=ccrs.Mercator());
+    ax.add_feature(europe_land_10m)
+    
+    gl = ax.gridlines(crs=ccrs.PlateCarree(),draw_labels=True,linewidth=.75, color='black', alpha=0.35, linestyle='--')
+    gl.xlabels_top = False
+    gl.ylabels_right = False
+    gl.xlocator = mticker.FixedLocator([-90,-2,2,6,10,14,18,22,90])
+    gl.ylocator = mticker.FixedLocator([0,37,40,43,46,60])
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+   
+    fig = plt.contourf(X,Y,q,transform=ccrs.PlateCarree(),cmap='bwr',levels=30);
+    plt.quiver(X,Y,uas_np,vas_np,transform=ccrs.PlateCarree(),width=.001,scale=750);
+    ax.set_extent([-4,24,35,48],crs=ccrs.PlateCarree());
+    
+    if q_min != None:
+        cbar = plt.cm.ScalarMappable(cmap='rainbow')
+        cbar.set_array(q)
+        cbar.set_clim(q_min,q_max)
+        plt.colorbar(cbar,fraction=0.030,pad=0.04,label='Wind Magnitude [m/s]',boundaries=np.linspace(q_min,q_max,30))
+    else:
+        plt.colorbar(fig,fraction=0.030,pad=0.04,label='Wind Magnitude [m/s]')
+    
+    plt.title(time[0:16]+' Wind/Specific Humidity Plot')
+    
+    if save:
+        plt.savefig(fname_path)
+    
+    plt.show()
+    plt.close()
+
+def mediterranean_wind_mag(uas,vas,time,fname_path=None,wind_min=None,wind_max=None,save=False):
+    ##########################################################################
+    # Setting up the data
+    uas = uas.loc[time]
+    vas = vas.loc[time]
+    
+    i = np.arange(0,192)
+    j = np.arange(0,300)
+    uas_np = np.array(uas[i,j])
+    vas_np = np.array(vas[i,j])
+    X = np.array(uas.nav_lon_grid_M[i,j])
+    Y = np.array(uas.nav_lat_grid_M[i,j])
+    
+    density = 1
+    uas_np = PKdm.reduce_density(uas_np,density)
+    vas_np = PKdm.reduce_density(vas_np,density)
+    X = PKdm.reduce_density(X,density)
+    Y = PKdm.reduce_density(Y,density)
+    
+    wind_mag = (uas_np**2 +  vas_np**2)**.5
+    
+    ##########################################################################
+    # Setting up the plot
+
+    europe_land_10m = cfeature.NaturalEarthFeature('physical','land','10m',edgecolor='black',facecolor='none',linewidth=2) 
+    
+    plt.figure(figsize=(12,8),dpi=200)
+    ax = plt.axes(projection=ccrs.Orthographic(8.9558,43.555));
+    ax = plt.axes(projection=ccrs.Mercator());
+    ax.add_feature(europe_land_10m)
+    
+    gl = ax.gridlines(crs=ccrs.PlateCarree(),draw_labels=True,linewidth=.75, color='black', alpha=0.35, linestyle='--')
+    gl.xlabels_top = False
+    gl.ylabels_right = False
+    gl.xlocator = mticker.FixedLocator([-90,-2,2,6,10,14,18,22,90])
+    gl.ylocator = mticker.FixedLocator([0,37,40,43,46,60])
+    gl.xformatter = LONGITUDE_FORMATTER
+    gl.yformatter = LATITUDE_FORMATTER
+   
+    fig = plt.contourf(X,Y,wind_mag,transform=ccrs.PlateCarree(),cmap='rainbow',levels=30);
+    plt.quiver(X,Y,uas_np,vas_np,transform=ccrs.PlateCarree(),width=.001,scale=750);
+    ax.set_extent([-4,24,35,48],crs=ccrs.PlateCarree());
+    
+    if wind_min != None:
+        cbar = plt.cm.ScalarMappable(cmap='rainbow')
+        cbar.set_array(wind_mag)
+        cbar.set_clim(wind_min,wind_max)
+        plt.colorbar(cbar,fraction=0.030,pad=0.04,label='Wind Magnitude [m/s]',boundaries=np.linspace(wind_min,wind_max,30))
+    else:
+        plt.colorbar(fig,fraction=0.030,pad=0.04,label='Wind Magnitude [m/s]')
+    
+    plt.title(time[0:16]+' Wind/Specific Humidity Plot')
+    
+    if save:
+        plt.savefig(fname_path)
     
     plt.show()
     plt.close()
