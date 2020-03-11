@@ -210,7 +210,6 @@ def mediterranean_isobar(uas,vas,Psl,time,fname_path=None,wind_min=None,wind_max
     
     if save:
         plt.savefig(fname_path)
-<<<<<<< HEAD
     
     plt.show()
     plt.close()
@@ -387,8 +386,6 @@ def mediterranean_wind_mag(uas,vas,time,fname_path=None,wind_min=None,wind_max=N
     
     if save:
         plt.savefig(fname_path)
-=======
->>>>>>> c505753d70fdce5ba6527bcadff5a8f6ccc24e91
     
     plt.show()
     plt.close()
