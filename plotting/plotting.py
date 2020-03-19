@@ -2,6 +2,8 @@
 #By: mach
 
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.cm as cm
 import PyKeller.signal_processing.signal_analysis as sa
 import numpy as np
 
@@ -99,3 +101,36 @@ def plot_2_in_1(x,y,xlabel,ylabel,label,xticks_step,file_path,top_adj=1,r_adj=1.
     plt.savefig(file_path)
         
     return
+
+def hist_3d(x,y,bins=25,rangexy=None,save_path=None):
+    
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
+    
+    h,xe,ye = np.histogram2d(x,y,bins=bins,range=rangexy)
+    
+    x = sa.midpoint(xe)
+    y = sa.midpoint(ye)
+    
+    xg,yg = np.meshgrid(x,y)
+    h = np.flip(np.rot90(h,axes=(1,0)),axis=1)
+    
+    xp,yp = xg.flatten(),yg.flatten()
+    zp = np.zeros_like(xp)
+    
+    dx = x[1]-x[0]
+    dy = y[1]-y[0]
+    dz = h.flatten()
+    
+    min_h = np.min(dz)
+    max_h = np.max(dz)
+    
+    cmap = cm.get_cmap('jet')
+    rgb = [cmap((k-min_h)/max_h) for k in dz]
+    
+    ax.bar3d(xp,yp,zp,dx,dy,dz,color=rgb,zsort='average')
+    
+    if save_path!=None:
+        fig.savefig(save_path)
+        
+    plt.show()
