@@ -29,6 +29,30 @@ def moving_mean(f,N):
         
     return mm
 
+def moving_std(f,N):
+    
+    mstd = np.zeros(f.size)
+    
+    for i in range(f.size):
+        if i < N:
+            m = []
+            for j in range(i+N+1):
+                if np.isfinite(f[j]):
+                    m.append(f[j])
+            m = np.array(m)
+            mstd[i] = np.std(m)
+        elif i+N > f.size-1:
+            m = []
+            for j in range(i-N,f.size):
+                if np.isfinite(f[j]):
+                    m.append(f[j])
+            m = np.array(m)
+            mstd[i] = np.std(m)
+        else:
+            mstd[i] = np.std(f[i-N:i+N+1][np.where(np.isfinite(f[i-N:i+N+1]))[0]])
+        
+    return mstd
+
 def moving_median(f,N,verbose=False):
     #Window = 2*N + 1
     mm = np.zeros(f.size)
