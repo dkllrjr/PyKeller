@@ -2,9 +2,8 @@
 
 import rasterio as rio
 import numpy as np
-import os
 
-def subarctic_arctic_geotiff2height(lat,long):
+def subarctic_arctic_geotiff2height(lat,long,tiff_files):
    
     lat_range = []
     for j in np.arange(50,90,20):
@@ -32,7 +31,7 @@ def subarctic_arctic_geotiff2height(lat,long):
                 file_long += 'e'
     
     geo_file = 0
-    files = os.listdir()
+    files = tiff_files
     for file in files:
         if file_long in file and file_lat in file:
             geo_file = file
@@ -40,9 +39,14 @@ def subarctic_arctic_geotiff2height(lat,long):
     if geo_file == 0:
         return 0    
     
+    print(geo_file)
     geo_file = rio.open(geo_file)
+    print(geo_file,lat,long)
+    e = geo_file.read()
+    print(e)
     row,col = geo_file.index(long,lat)
-    elev = geo_file.read()[0,:,:]
+    print(row,col)
+    elev = geo_file.read()
     ground_height = elev[row,col]
     
     if ground_height <= -32768:
