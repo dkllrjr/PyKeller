@@ -65,3 +65,32 @@ def dates2indices(xarr,dates):
 
 def reduce_density(arr,i):
     return arr[::i,::i]
+
+#def datetime2datetime64(t):
+#    if len(str(t.day)) < 2:
+#        d = '0' + str(t.day)
+#    else:
+#        d = str(t.day)
+#    if len(str(t.month)) < 2:
+#        m = '0' + str(t.month)
+#    else:
+#        m = str(t.month)
+#    if len(str(t.hour)) < 2:
+#        h = '0' + str(t.hour)
+#    else:
+#        h = str(t.hour)
+#    if len(str(t.minute)) < 2:
+#        mn = '0' + str(t.minute)
+#    else:
+#        mn = str(t.minute)
+#    if len(str(t.second)) < 2:
+#        s = '0' + str(t.second)
+#    else:
+#        s = str(t.second)
+#        
+#    ndate = str(t.year) + '-' + m + '-' + d + 'T' + h + ':' + mn + ':' + s
+#    
+#    return np.datetime64(ndate)
+
+def datetime2datetime64(t):
+    return np.datetime64(t)

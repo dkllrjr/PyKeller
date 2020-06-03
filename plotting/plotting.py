@@ -6,6 +6,11 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.cm as cm
 import PyKeller.signal_processing.signal_analysis as sa
 import numpy as np
+import os
+
+def plotname_from_scriptname(script__file__):
+    # expecting script name ending with '_plot.py'
+    return os.path.split(script__file__)[-1][0:-8]
 
 def plot_bar(bins,hist):
     

@@ -6,7 +6,7 @@ import math as m
 from scipy.interpolate import interp1d
 
 def moving_mean(f,N):
-    
+    #Window = 2*N + 1
     mm = np.zeros(f.size)
     
     for i in range(f.size):
@@ -16,16 +16,16 @@ def moving_mean(f,N):
                 if np.isfinite(f[j]):
                     m.append(f[j])
             m = np.array(m)
-            mm[i] = np.mean(m)
+            mm[i] = np.nanmean(m)
         elif i+N > f.size-1:
             m = []
             for j in range(i-N,f.size):
                 if np.isfinite(f[j]):
                     m.append(f[j])
             m = np.array(m)
-            mm[i] = np.mean(m)
+            mm[i] = np.nanmean(m)
         else:
-            mm[i] = np.mean(f[i-N:i+N+1][np.where(np.isfinite(f[i-N:i+N+1]))[0]])
+            mm[i] = np.nanmean(f[i-N:i+N+1][np.where(np.isfinite(f[i-N:i+N+1]))[0]])
         
     return mm
 
@@ -40,16 +40,16 @@ def moving_std(f,N):
                 if np.isfinite(f[j]):
                     m.append(f[j])
             m = np.array(m)
-            mstd[i] = np.std(m)
+            mstd[i] = np.nanstd(m)
         elif i+N > f.size-1:
             m = []
             for j in range(i-N,f.size):
                 if np.isfinite(f[j]):
                     m.append(f[j])
             m = np.array(m)
-            mstd[i] = np.std(m)
+            mstd[i] = np.nanstd(m)
         else:
-            mstd[i] = np.std(f[i-N:i+N+1][np.where(np.isfinite(f[i-N:i+N+1]))[0]])
+            mstd[i] = np.nanstd(f[i-N:i+N+1][np.where(np.isfinite(f[i-N:i+N+1]))[0]])
         
     return mstd
 
@@ -66,16 +66,16 @@ def moving_median(f,N,verbose=False):
                 if np.isfinite(f[j]):
                     m.append(f[j])
             m = np.array(m)
-            mm[i] = np.median(m)
+            mm[i] = np.nanmedian(m)
         elif i+N > f.size-1:
             m = []
             for j in range(i-N,f.size):
                 if np.isfinite(f[j]):
                     m.append(f[j])
             m = np.array(m)
-            mm[i] = np.median(m)
+            mm[i] = np.nanmedian(m)
         else:
-            mm[i] = np.median(f[i-N:i+N+1][np.where(np.isfinite(f[i-N:i+N+1]))[0]])
+            mm[i] = np.nanmedian(f[i-N:i+N+1][np.where(np.isfinite(f[i-N:i+N+1]))[0]])
         
     return mm
 
