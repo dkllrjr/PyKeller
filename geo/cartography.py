@@ -12,8 +12,8 @@ land_shp_fname = shpreader.natural_earth(resolution='50m',
 land_geom = unary_union(list(shpreader.Reader(land_shp_fname).geometries()))
 land = prep(land_geom)
 
-def is_land(x,y):
-    return land.contains(sgeom.Point(x,y))
+def is_land(lat,lon):
+    return land.contains(sgeom.Point(lon,lat))
 
 def platecarree2mercator(lon,lat):
     merc_point = ccrs.Mercator().transform_point(lon,lat,ccrs.PlateCarree())
