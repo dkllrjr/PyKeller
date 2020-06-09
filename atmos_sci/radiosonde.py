@@ -2,8 +2,8 @@
 
 import numpy as np
 import os
-os.chdir('..')
-os.chdir('..')
+#os.chdir('..')
+#os.chdir('..')
 import PyKeller.atmos_sci.atmos_refractivity as ar
 
 class Radiosonde: #class to store the radiosonde data
@@ -217,3 +217,6 @@ def get_radiosonde_from_text():
             radiosondes.append(i)
     radiosondes = sorted(radiosondes, key = lambda ri: ri.index)
     return radiosondes
+
+def e(mixr,P):
+    return mixr*P/(mixr + .622)

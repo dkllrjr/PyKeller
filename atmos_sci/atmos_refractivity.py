@@ -21,7 +21,7 @@ def snell_interp(nz_arr,z_arr,z):
 
     return nz(z)
 
-def run_snell_forward_propagation(nz,z,z0,dx,phi):
+def run_snell_forward_propagation(nz,z,z0,dx,x_end,phi):
     
     ori = np.sign(phi)
     x0 = 0
@@ -29,7 +29,7 @@ def run_snell_forward_propagation(nz,z,z0,dx,phi):
     
     x_ray = [x0]
     z_ray = [z0]
-    while z0 > z[0] and z0 < z[-1] and z0 != np.nan and x0 < 50000:
+    while z0 > z[0] and z0 < z[-1] and z0 != np.nan and x0 < x_end:
         x0,z0,theta0,ori = snell_forward_propagation(x0,dx,z0,theta0,ori,nz,z)
         x_ray.append(x0)
         z_ray.append(z0)
@@ -71,28 +71,28 @@ def snell_forward_propagation(x0,dx,z0,theta0,ori,nz,z):
     
     if n0*np.sin(theta0)/n1 == 1:
         theta1 = np.pi/2
-        ori = -1
+        ori *= -1
         return x1, z1, theta1, ori
     
     elif n0*np.sin(theta0)/n1 > 1:
         theta1 = theta0
-        ori = -1
+        ori *= -1
         return x1, z1, theta1, ori
     
     theta1 = np.arcsin(n0*np.sin(theta0)/n1)
     
     return x1, z1, theta1, ori
 
-def snell_ray_trace(nz,zi,z0,dx):
+def snell_ray_trace(nz,zi,z0,dx,x_end,phi):
     
-    phi = np.linspace(np.pi/1024,-np.pi/1024,1024)
+#    phi = np.linspace(np.pi/1024,-np.pi/1024,1024)
 
     rays = []
     ray_distance = []
     
     for i in range(len(phi)):
         
-        x,z = run_snell_forward_propagation(nz,zi,z0,dx,phi[i])
+        x,z = run_snell_forward_propagation(nz,zi,z0,dx,x_end,phi[i])
 
         x = np.array(x)
         z = np.array(z)
