@@ -3,9 +3,9 @@
 
 import numpy as np
 import os
-os.chdir('..')
-os.chdir('..')
-import PyKeller.signal_processing.pycuda_fourier as pyft
+# os.chdir('..')
+# os.chdir('..')
+# import PyKeller.signal_processing.pycuda_fourier as pyft
 
 class Velocity:
     
@@ -44,6 +44,7 @@ class Turbulence:
         self.w_mean, self.w_prime = run_reynolds_decomposition(w)
         self.T_mean, self.T_prime = run_reynolds_decomposition(T)
         self.t_mean, _ = run_reynolds_decomposition(t)
+        self.t_prime = t
 
 class Wind:
     
@@ -134,9 +135,9 @@ def run_tilt_correction(u,v,w):
         u[i], v[i], w[i], theta[i], phi[i] = tilt_correction(u[i],v[i],w[i])
     return u, v, w, theta, phi
 
-def turbulent_spectral_energy(x,t):
-    x_ft,x_w = pyft.ft(x,t)
-    energy = np.zeros_like(x_ft)
-    for i in range(energy.size):
-        energy[i] = 2*(x_ft[i].real**2 + x_ft[i].imag**2)
-    return energy,x_w
+# def turbulent_spectral_energy(x,t):
+    # x_ft,x_w = pyft.ft(x,t)
+    # energy = np.zeros_like(x_ft)
+    # for i in range(energy.size):
+        # energy[i] = 2*(x_ft[i].real**2 + x_ft[i].imag**2)
+    # return energy,x_w
